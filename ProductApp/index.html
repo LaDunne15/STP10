@@ -1,0 +1,96 @@
+﻿<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <title>Course App</title>
+    </head>
+<body>
+    <div id="app">
+        <div>
+            <h2>All Courses</h2>
+                <table>
+                    <thead>
+                        <tr>
+                            <th scope="col">№</th>
+                            <th scope="col">Name</th>
+                            <th scope="col">Price</th>
+                            <th scope="col">DateStart</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr v-for="course in courses">
+                            <td><button @click="getBookById2(1)">{{course.Id}}</button></td>
+                            <td>{{course.Name}}</td>
+                            <td>{{course.Price}}</td>
+                            <td>{{course.DateStart}}</td>
+                        </tr>
+                    </tbody>
+                </table>
+        </div>
+        <div>
+            <input type="number" v-model="input">
+            <input type="button" @click="getBookById()" value="Search">
+            <div v-if="selectedCourse">
+                <p>Id:{{selectedCourse.Id}}</p>
+                <p>Name:{{selectedCourse.Name}}</p>
+                <p>Price:{{selectedCourse.Price}}</p>
+                <p>DateStart:{{selectedCourse.DateStart}}</p>
+            </div>
+        </div>
+    </div>
+    <script src="https://unpkg.com/axios/dist/axios.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/vue@2.6.14"></script>
+    <script>
+        let uri = 'api/courses';
+        const app = new Vue({
+            el: '#app',
+            data: () => ({
+                courses: [],
+                selectedCourse: null,
+                input: '',
+                error: false
+            }),
+            created() {
+                axios.get(uri)
+                    .then((res) => {
+                        this.courses = res.data;
+                    })
+                    .catch(err => {
+                        console.log('Cannot load courses');
+                    })
+            },
+            methods: {
+                getBookById: function() {
+                    let id = this.input;
+                    if (String(id).trim() !== '') {
+                        axios.get(`${uri}/${id}`)
+                            .then(res => {
+                                console.log(res.data);
+                                this.selectedCourse = res.data;
+                                this.error = false;
+                            })
+                            .catch((err) => {
+                                this.error = true;
+                                this.selectedCourse = null;
+                            })
+                    }
+                },
+                getBookById2: function(id) {
+                    if (String(id).trim() !== '') {
+                        axios.get(`${uri}/${id}`)
+                            .then(res => {
+                                console.log(res.data);
+                                this.selectedCourse = res.data;
+                                this.error = false;
+                            })
+                            .catch((err) => {
+                                this.error = true;
+                                this.selectedCourse = null;
+                            })
+                    }
+                }
+            }
+        })
+    </script>
+</body>
+</html>
